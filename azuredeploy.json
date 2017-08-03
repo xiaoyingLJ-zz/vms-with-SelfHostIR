@@ -8,10 +8,16 @@
         "description": "your existing data factory name"
       }
     },
-    "GatewayName": {
+    "existingDataFactoryResourceGroup": {
+      "type":"string",
+      "metadata": {
+        "description": "your existing data factory resource group"
+      }
+    },
+    "IRname": {
       "type": "string",
       "metadata": {
-        "description": "Gateway name must be unique in subscription"
+        "description": "IR name must be unique in subscription"
       }
     },
     "GatewayNodeCount":{
@@ -76,22 +82,23 @@
   },
   "variables": {
     "delimiters": [ "-", "_" ],
-    "prefix": "[split(parameters('GatewayName'), variables('delimiters'))[0]]", 
-    "gatewayId": "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('GatewayName'))]",
-    "storageAccountName": "[take(concat(toLower(variables('prefix')), uniquestring(resourceGroup().id, parameters('GatewayName'))), 24)]",   
-    "networkSecurityGroupName": "[concat(parameters('GatewayName'), 'nsg')]",
+    "prefix": "[split(parameters('IRname'), variables('delimiters'))[0]]", 
+    "gatewayId": "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IRname'))]",
+    "storageAccountName": "[take(concat(toLower(variables('prefix')), uniquestring(resourceGroup().id, parameters('IRname'))), 24)]",   
+    "networkSecurityGroupName": "[concat(parameters('IRname'), 'nsg')]",
     "vmTemplateLink": "[concat(parameters('_artifactsLocation'), 'nested/VMtemplate.json',parameters('_artifactsLocationSasToken'))]",
     "subnetId": "[resourceId(parameters('existingVnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVirtualNetworkName'), parameters('existingSubnetInYourVnet'))]",
     "scriptURL": "[concat(parameters('_artifactsLocation'), 'scripts/gatewayInstall.ps1',parameters('_artifactsLocationSasToken'))]"
   },
   "resources": [
     {
-      "type": "Microsoft.DataFactory/dataFactories/gateways",
-      "apiVersion": "2015-10-01",
-      "name": "[concat(parameters('existingDataFactoryName'), '/', parameters('GatewayName'))]",
+      "type": "Microsoft.DataFactory/factories/integrationruntimes",
+      "apiVersion": "2017-03-01-preview",
+      "name": "[concat('xiaoying-template/', parameters('IRname'))]",
+      "resourceGroup": "[parameters('existingDataFactoryResourceGroup')]",
       "properties": {
-        "multiNodeSupportEnabled": true,
-        "description": "my gateway"
+        "type": "SelfHost",
+        "description": "gateway integration runtime"
       }
     },
     {
@@ -123,7 +130,7 @@
       "apiVersion": "2016-01-01",
       "location": "[parameters('existingVnetLocation')]",
       "dependsOn": [
-        "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('GatewayName'))]"
+        "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IRname'))]"
       ],
       "sku": {
         "name": "Standard_LRS"
@@ -136,7 +143,7 @@
       "name": "[concat('VMtemplate-', copyIndex())]",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
-        "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('GatewayName'))]",
+        "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IRname'))]",
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
       ],

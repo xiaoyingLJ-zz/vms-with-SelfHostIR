@@ -147,7 +147,7 @@
       "apiVersion": "2016-01-01",
       "location": "[parameters('existingVnetLocation')]",
       "dependsOn": [
-        "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]"
+        "[resourceId('Microsoft.Resources/deployments', 'nestedTemplate')]"
       ],
       "sku": {
         "name": "Standard_LRS"
@@ -160,7 +160,7 @@
       "name": "[concat('VMtemplate-', copyIndex())]",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
-        "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]",
+        "[resourceId('Microsoft.Resources/deployments', 'nestedTemplate')]",
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
       ],

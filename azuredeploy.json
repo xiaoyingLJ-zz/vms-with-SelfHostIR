@@ -14,7 +14,7 @@
         "description": "your existing data factory resource group"
       }
     },
-    "IRname": {
+    "IntegrationRuntimeName": {
       "type": "string",
       "metadata": {
         "description": "IR name must be unique in subscription"
@@ -82,23 +82,40 @@
   },
   "variables": {
     "delimiters": [ "-", "_" ],
-    "prefix": "[split(parameters('IRname'), variables('delimiters'))[0]]", 
-    "gatewayId": "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IRname'))]",
-    "storageAccountName": "[take(concat(toLower(variables('prefix')), uniquestring(resourceGroup().id, parameters('IRname'))), 24)]",   
-    "networkSecurityGroupName": "[concat(parameters('IRname'), 'nsg')]",
+    "prefix": "[split(parameters('IntegrationRuntimeName'), variables('delimiters'))[0]]", 
+    "gatewayId": "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]",
+    "storageAccountName": "[take(concat(toLower(variables('prefix')), uniquestring(resourceGroup().id, parameters('IntegrationRuntimeName'))), 24)]",   
+    "networkSecurityGroupName": "[concat(parameters('IntegrationRuntimeName'), 'nsg')]",
     "vmTemplateLink": "[concat(parameters('_artifactsLocation'), 'nested/VMtemplate.json',parameters('_artifactsLocationSasToken'))]",
     "subnetId": "[resourceId(parameters('existingVnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVirtualNetworkName'), parameters('existingSubnetInYourVnet'))]",
     "scriptURL": "[concat(parameters('_artifactsLocation'), 'scripts/gatewayInstall.ps1',parameters('_artifactsLocationSasToken'))]"
   },
-  "resources": [
+  "resources": [    
     {
-      "type": "Microsoft.DataFactory/factories/integrationruntimes",
-      "apiVersion": "2017-03-01-preview",
-      "name": "[concat('xiaoying-template/', parameters('IRname'))]",
+      "apiVersion": "2017-05-10",
+      "name": "nestedTemplate",
+      "type": "Microsoft.Resources/deployments",
       "resourceGroup": "[parameters('existingDataFactoryResourceGroup')]",
       "properties": {
-        "type": "SelfHost",
-        "description": "gateway integration runtime"
+          "mode": "Incremental",
+          "template": {
+              "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+              "contentVersion": "1.0.0.0",
+              "parameters": {},
+              "variables": {},
+              "resources": [
+                  {
+                    "type": "Microsoft.DataFactory/factories/integrationruntimes",
+                    "apiVersion": "2017-03-01-preview",
+                    "name": "[concat('xiaoying-template/', parameters('IntegrationRuntimeName'))]",
+                    "properties": {
+                      "type": "SelfHost",
+                      "description": "gateway integration runtime"
+                    }
+                  }
+              ]
+          },
+          "parameters": {}
       }
     },
     {
@@ -130,7 +147,7 @@
       "apiVersion": "2016-01-01",
       "location": "[parameters('existingVnetLocation')]",
       "dependsOn": [
-        "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IRname'))]"
+        "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]"
       ],
       "sku": {
         "name": "Standard_LRS"
@@ -143,7 +160,7 @@
       "name": "[concat('VMtemplate-', copyIndex())]",
       "type": "Microsoft.Resources/deployments",
       "dependsOn": [
-        "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IRname'))]",
+        "[resourceId('Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]",
         "[resourceId('Microsoft.Network/networkSecurityGroups', variables('networkSecurityGroupName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
       ],

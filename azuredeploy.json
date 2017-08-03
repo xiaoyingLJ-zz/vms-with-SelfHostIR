@@ -20,7 +20,7 @@
         "description": "IR name must be unique in subscription"
       }
     },
-    "GatewayNodeCount":{
+    "IrNodeCount":{
       "type": "int",
       "maxValue": 4,
       "minValue": 1,

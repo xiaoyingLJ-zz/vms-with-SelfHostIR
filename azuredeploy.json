@@ -20,7 +20,7 @@
         "description": "IR name must be unique in subscription"
       }
     },
-    "IrNodeCount":{
+    "NodeCount":{
       "type": "int",
       "maxValue": 4,
       "minValue": 1,
@@ -166,7 +166,7 @@
       ],
       "copy": { 
         "name": "vmcopy", 
-        "count": "[parameters('GatewayNodeCount')]" 
+        "count": "[parameters('NodeCount')]" 
       },
       "properties": {
         "mode": "incremental",

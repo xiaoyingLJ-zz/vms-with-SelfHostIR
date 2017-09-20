@@ -19,7 +19,7 @@
     "resources": [
         {
           "type": "Microsoft.DataFactory/factories/integrationruntimes",
-          "apiVersion": "2017-03-01-preview",
+          "apiVersion": "2017-09-01-preview",
           "name": "[concat(parameters('existingDataFactoryName'), '/', parameters('IntegrationRuntimeName'))]",
           "properties": {
             "type": "SelfHost",
@@ -30,7 +30,7 @@
     "outputs": {
       "IRkey":{
         "type": "string",
-        "value": "[listAuthKeys(resourceId('Microsoft.DataFactory/factories/integrationruntimes', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName')), '2017-03-01-preview').authKey1]"
+        "value": "[listAuthKeys(resourceId('Microsoft.DataFactory/factories/integrationruntimes', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName')), '2017-09-01-preview').authKey1]"
       }      
     }
 }

@@ -92,8 +92,14 @@
   "variables": {
     "delimiters": [ "-", "_" ],
     "prefix": "[split(parameters('IntegrationRuntimeName'), variables('delimiters'))[0]]", 
-    "V1IntegrationRuntimeId": "[resourceId(parameters('existingDataFactoryResourceGroup'), 'Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]",
-    "V2IntegrationRuntimeId": "[resourceId(parameters('existingDataFactoryResourceGroup'), 'Microsoft.DataFactory/factories/integrationruntimes', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]",
+    "V1Setting": {
+      "IntegrationRuntimeId": "[resourceId(parameters('existingDataFactoryResourceGroup'), 'Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]",
+      "apiVersion": "2015-10-01"
+    },
+    "V2Setting": {
+      "IntegrationRuntimeId": "[resourceId(parameters('existingDataFactoryResourceGroup'), 'Microsoft.DataFactory/factories/integrationruntimes', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]",
+      "apiVersion": "2017-03-01-preview"
+    },
     "storageAccountName": "[take(concat(toLower(variables('prefix')), uniquestring(resourceGroup().id, parameters('IntegrationRuntimeName'))), 24)]",   
     "networkSecurityGroupName": "[concat(parameters('IntegrationRuntimeName'), 'nsg')]",
     "vmTemplateLink": "[concat(parameters('_artifactsLocation'), 'nested/VMtemplate.json',parameters('_artifactsLocationSasToken'))]",

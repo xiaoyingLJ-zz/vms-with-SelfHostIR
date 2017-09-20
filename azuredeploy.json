@@ -92,11 +92,11 @@
   "variables": {
     "delimiters": [ "-", "_" ],
     "prefix": "[split(parameters('IntegrationRuntimeName'), variables('delimiters'))[0]]", 
-    "V1Setting": {
+    "V1Settings": {
       "IntegrationRuntimeId": "[resourceId(parameters('existingDataFactoryResourceGroup'), 'Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]",
       "apiVersion": "2015-10-01"
     },
-    "V2Setting": {
+    "V2Settings": {
       "IntegrationRuntimeId": "[resourceId(parameters('existingDataFactoryResourceGroup'), 'Microsoft.DataFactory/factories/integrationruntimes', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]",
       "apiVersion": "2017-03-01-preview"
     },
@@ -188,7 +188,7 @@
         "parameters": {
           "gatewayId":
           {
-            "value": "[variables(concat(parameters('existingDataFactoryVersion'),'IntegrationRuntimeId'))]"
+            "value": "[variables(concat(parameters('existingDataFactoryVersion'),'Settings'))]"
           },
           "virtualMachineName": {
             "value": "[take(concat('vm',copyIndex(),'-', variables('prefix')), 15)]"

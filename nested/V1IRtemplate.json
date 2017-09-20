@@ -3,28 +3,22 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "existingDataFactoryName": {
-            "type":"string",
-            "metadata": {
-              "description": "your existing data factory name"
-            }
+            "type":"string"
           },
           "IntegrationRuntimeName": {
-            "type": "string",
-            "metadata": {
-              "description": "IR name must be unique in subscription"
-            }
+            "type": "string"
           }
     },
     "variables": {},
     "resources": [
         {
-            "type": "Microsoft.DataFactory/dataFactories/gateways",
-            "apiVersion": "2015-10-01",
-            "name": "[concat(parameters('existingDataFactoryName'), '/', parameters('IntegrationRuntimeName'))]",
-            "properties": {
-              "multiNodeSupportEnabled": true,
-              "description": "my gateway"
-            }
+          "type": "Microsoft.DataFactory/dataFactories/gateways",
+          "apiVersion": "2015-10-01",
+          "name": "[concat(parameters('existingDataFactoryName'), '/', parameters('IntegrationRuntimeName'))]",
+          "properties": {
+            "multiNodeSupportEnabled": true,
+            "description": "my gateway"
+          }
         }
     ],
     "outputs": {

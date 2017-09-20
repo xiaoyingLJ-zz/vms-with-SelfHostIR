@@ -4,7 +4,7 @@
   "parameters": {
     "IRkey":
     {
-      "type": "object"
+      "type": "string"
     },
     "virtualMachineName": 
     {

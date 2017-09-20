@@ -14,6 +14,15 @@
         "description": "your existing data factory resource group"
       }
     },
+    "existingDataFactoryVersion": {
+      "type":"string",
+      "metadata": {
+        "description": "your existing data factory version"
+      },
+      "allowedValues": [
+        "V1", "V2"
+      ]
+    },
     "IntegrationRuntimeName": {
       "type": "string",
       "metadata": {
@@ -83,10 +92,12 @@
   "variables": {
     "delimiters": [ "-", "_" ],
     "prefix": "[split(parameters('IntegrationRuntimeName'), variables('delimiters'))[0]]", 
-    "gatewayId": "[resourceId(parameters('existingDataFactoryResourceGroup'), 'Microsoft.DataFactory/factories/integrationruntimes', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]",
+    "V1IntegrationRuntimeId": "[resourceId(parameters('existingDataFactoryResourceGroup'), 'Microsoft.DataFactory/dataFactories/gateways', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]",
+    "V2IntegrationRuntimeId": "[resourceId(parameters('existingDataFactoryResourceGroup'), 'Microsoft.DataFactory/factories/integrationruntimes', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName'))]",
     "storageAccountName": "[take(concat(toLower(variables('prefix')), uniquestring(resourceGroup().id, parameters('IntegrationRuntimeName'))), 24)]",   
     "networkSecurityGroupName": "[concat(parameters('IntegrationRuntimeName'), 'nsg')]",
     "vmTemplateLink": "[concat(parameters('_artifactsLocation'), 'nested/VMtemplate.json',parameters('_artifactsLocationSasToken'))]",
+    "IRtemplateLink": "[concat(parameters('_artifactsLocation'), 'nested/', parameters('existingDataFactoryVersion'), 'IRtemplate.json',parameters('_artifactsLocationSasToken'))]",
     "subnetId": "[resourceId(parameters('existingVnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('existingVirtualNetworkName'), parameters('existingSubnetInYourVnet'))]",
     "scriptURL": "[concat(parameters('_artifactsLocation'), 'scripts/gatewayInstall.ps1',parameters('_artifactsLocationSasToken'))]"
   },
@@ -98,24 +109,18 @@
       "resourceGroup": "[parameters('existingDataFactoryResourceGroup')]",
       "properties": {
           "mode": "Incremental",
-          "template": {
-              "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-              "contentVersion": "1.0.0.0",
-              "parameters": {},
-              "variables": {},
-              "resources": [
-                  {
-                    "type": "Microsoft.DataFactory/factories/integrationruntimes",
-                    "apiVersion": "2017-03-01-preview",
-                    "name": "[concat(parameters('existingDataFactoryName'), '/', parameters('IntegrationRuntimeName'))]",
-                    "properties": {
-                      "type": "SelfHost",
-                      "description": "gateway integration runtime"
-                    }
-                  }
-              ]
+          "templateLink": {
+            "uri": "[variables('IRtemplateLink')]",
+            "contentVersion": "1.0.0.0"
           },
-          "parameters": {}
+          "parameters": {
+            "existingDataFactoryName": {
+              "value": "[parameters('existingDataFactoryName')]"
+            },
+            "IntegrationRuntimeName": {
+              "value": "[parameters('IntegrationRuntimeName')]"
+            }
+          }
       }
     },
     {
@@ -177,7 +182,7 @@
         "parameters": {
           "gatewayId":
           {
-            "value": "[variables('gatewayId')]"
+            "value": "[variables(concat(parameters('existingDataFactoryVersion'),'IntegrationRuntimeId'))]"
           },
           "virtualMachineName": {
             "value": "[take(concat('vm',copyIndex(),'-', variables('prefix')), 15)]"

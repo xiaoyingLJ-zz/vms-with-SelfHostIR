@@ -26,5 +26,11 @@
             "description": "gateway integration runtime"
           }
         }
-    ]
+    ],
+    "outputs": {
+      "IRkey":{
+        "type": "string",
+        "value": "[listAuthKeys(resourceId('Microsoft.DataFactory/factories/integrationruntimes', parameters('existingDataFactoryName'), parameters('IntegrationRuntimeName')), '2017-03-01-preview').authKey1]"
+      }      
+    }
 }
